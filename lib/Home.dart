@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_lernen/Point.dart';
+import 'package:http/http.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,17 +19,36 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
 
-    var elem1 = Point(1, 1);
-    var elem2 = Point(2, 2);
-    var elem3 = Point(3, 3);
-    var elem4 = Point(4, 5);
-    var elem5 = Point(7, 7);
+    // var elem1 = Point(1, 1);
+    // var elem2 = Point(2, 2);
+    // var elem3 = Point(3, 3);
+    // var elem4 = Point(4, 5);
+    // var elem5 = Point(7, 7);
+    //
+    // list.add(elem1);
+    // list.add(elem2);
+    // list.add(elem3);
+    // list.add(elem4);
+    // list.add(elem5);
 
-    list.add(elem1);
-    list.add(elem2);
-    list.add(elem3);
-    list.add(elem4);
-    list.add(elem5);
+    var url =
+        "https://ueben-d57bd-default-rtdb.europe-west1.firebasedatabase.app";
+
+    fetch(url);
+  }
+
+  void fetch(String url) async {
+    var response = await get(Uri.parse("$url/points.json"));
+
+    Map<String, dynamic> map = jsonDecode(response.body);
+
+    for (var elem in map.values) {
+      var points = elem as Map<String, dynamic>;
+
+      var point = Point(double.parse(points["x"]), double.parse(points["y"]));
+
+      list.add(point);
+    }
   }
 
   @override
@@ -89,11 +111,10 @@ class _HomeState extends State<Home> {
         child: ScatterChart(
           ScatterChartData(
               titlesData: const FlTitlesData(
-                  topTitles: AxisTitles(), rightTitles: AxisTitles()),
+                  topTitles: AxisTitles(),
+                  rightTitles: AxisTitles()),
               scatterSpots: [
-                for (var elem in list)
-                  ScatterSpot(elem.x, elem.y,
-                      dotPainter: FlDotCirclePainter(radius: (elem.x * 5)))
+                for (var elem in list) ScatterSpot(elem.x, elem.y)
               ]),
         ),
       ),
