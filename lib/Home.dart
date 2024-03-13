@@ -38,16 +38,22 @@ class _HomeState extends State<Home> {
   }
 
   void fetch(String url) async {
-    var response = await get(Uri.parse("$url/points.json"));
+    try {
+      var response = await get(Uri.parse("$url/poindts.json"));
 
-    Map<String, dynamic> map = jsonDecode(response.body);
+      Map<String, dynamic> map = jsonDecode(response.body);
 
-    for (var elem in map.values) {
-      var points = elem as Map<String, dynamic>;
+      for (var elem in map.values) {
+        var points = elem as Map<String, dynamic>;
 
-      var point = Point(double.parse(points["x"]), double.parse(points["y"]));
+        var point = Point(double.parse(points["x"]), double.parse(points["y"]));
 
-      list.add(point);
+        list.add(point);
+      }
+    } catch (e) {
+      SnackBar snackBar = const SnackBar(content: Text("huff"));
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -111,8 +117,7 @@ class _HomeState extends State<Home> {
         child: ScatterChart(
           ScatterChartData(
               titlesData: const FlTitlesData(
-                  topTitles: AxisTitles(),
-                  rightTitles: AxisTitles()),
+                  topTitles: AxisTitles(), rightTitles: AxisTitles()),
               scatterSpots: [
                 for (var elem in list) ScatterSpot(elem.x, elem.y)
               ]),
