@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
 
   void fetch(String url) async {
     try {
-      var response = await get(Uri.parse("$url/poindts.json"));
+      var response = await get(Uri.parse("$url/points.json"));
 
       Map<String, dynamic> map = jsonDecode(response.body);
 
